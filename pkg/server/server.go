@@ -581,6 +581,9 @@ func (s *Server) requestRestore(recoveryPointID string, machineID string, path s
 
 func compressDir(src string, w io.Writer) error {
 	// zip > buf
+	if err := os.Chdir(src); err != nil {
+		return err
+	}
 	zw := zip.NewWriter(w)
 	defer zw.Close()
 
@@ -619,7 +622,7 @@ func compressDir(src string, w io.Writer) error {
 	}
 
 	// walk through every file in the folder and add to zip writer.
-	if err := filepath.Walk(src, walker); err != nil {
+	if err := filepath.Walk(".", walker); err != nil {
 		return err
 	}
 
